@@ -5,7 +5,7 @@ $max_procs = $argv[3];
 
 require $cohort_file;
 
-$log_dir = "logs_$release";
+$log_dir = "$release";
 if (!is_dir($log_dir)) {
   if (!mkdir($log_dir)) {
     print "ERROR: Failed to create log directory.\n";
@@ -27,11 +27,10 @@ foreach ($sites as $site) {
     $cmd = "./$update_script $site $env $release";
     $outputfile = $log_dir . DIRECTORY_SEPARATOR . $site . "_" . time() . '.log';
     exec(sprintf("%s > %s 2>&1 &", $cmd, $outputfile), $output, $return);
+    // $return just tells us if the process was successfully initiated in the background.
+    // We don't wait on the bg process to find its true status. Rely on log file for that.
     if ($return != 0) {
       $error_msg = "ERROR: Failed to execute '$cmd'\n";
-      $fh = fopen($outputfile);
-      fwrite($fh, $error_msg);
-      fclose($fh);
       print $error_msg;
       print "$output\n";
     }
