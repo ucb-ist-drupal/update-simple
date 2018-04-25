@@ -71,13 +71,15 @@ for ($j = 1; $j <= $max_attempts; $j++) {
     print "Notice: Finished with $cohort_file.\n";
     break;
   }
-  if ($j == 10) {
-    print "Warning: Processes still running. Doing final S3 sync and aborting.";
+  if ($j == $max_attempts) {
+    print "Warning: Processes still running. Doing final S3 sync and aborting.\n";
     s3_sync($s3url, $log_dir);
   }
   else {
     print "Notice: S3 sync attempt $j: Processes still running.\n";
     sleep($sleep_s3_sync);
+    // Sync anyway to upload any new log messages.
+    s3_sync($s3url, $log_dir);
   }
 }
 
