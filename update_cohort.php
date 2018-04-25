@@ -8,8 +8,8 @@ $TEST = true;
 if ($TEST) {
   $update_script = 'update_test.sh';
   $s3url = "s3://update-logs-pantheon-managed-sites/dev";
-  $sleep_max_proc = 3;
-  $sleep_s3_sync = 3;
+  $sleep_max_proc = 10;
+  $sleep_s3_sync = 30;
   $s3_sync_attempts = 10;
 }
 else {
@@ -82,7 +82,8 @@ for ($j = 1; $j <= $max_attempts; $j++) {
 }
 
 function count_procs($update_script) {
-  return trim(exec("pgrep -f $update_script | wc -l"));
+  // grep for "php $update_script" so to filter out processes like "emacs $update_script"
+  return trim(exec("pgrep -f 'php $update_script' | wc -l"));
 }
 
 function s3_sync($s3url, $log_dir) {
