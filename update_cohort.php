@@ -93,5 +93,5 @@ function s3_sync($s3url, $log_dir) {
   $s3_cmd = "aws s3 sync $log_dir $s3url/$log_dir";
   $s3_outputfile = DIRECTORY_SEPARATOR. "tmp" . DIRECTORY_SEPARATOR . "s3_sync.log";
   //sync logs to s3. It's async, so background this.
-  exec(sprintf("%s > %s 2>&1 &", $s3_cmd, $s3_outputfile));
+  exec(sprintf("%s >> %s 2>&1 &", $s3_cmd, $s3_outputfile));
 }
