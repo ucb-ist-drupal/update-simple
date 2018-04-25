@@ -55,7 +55,7 @@ foreach ($sites as $site) {
   }
   else {
     //give procs time to finish
-    print "Max processes ($max_procs) reached.  Sleeping.\n";
+    print "Notice: Max processes ($max_procs) reached.  Sleeping.\n";
     sleep($sleep_max_proc);
     s3_sync($s3url, $log_dir);
   }
@@ -83,7 +83,7 @@ for ($j = 1; $j <= $max_attempts; $j++) {
 
 function count_procs($update_script) {
   // grep for "php $update_script" so to filter out processes like "emacs $update_script"
-  return trim(exec("pgrep -f 'php $update_script' | wc -l"));
+  return trim(exec("pgrep -f $update_script | wc -l"));
 }
 
 function s3_sync($s3url, $log_dir) {
