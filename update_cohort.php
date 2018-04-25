@@ -3,7 +3,7 @@ $cohort_file = $argv[1];
 $release = $argv[2];
 $max_procs = $argv[3];
 
-$TEST = true;
+$TEST = false;
 
 if ($TEST) {
   $update_script = 'update_test.sh';
@@ -15,8 +15,8 @@ if ($TEST) {
 else {
   $update_script = 'update.sh';
   $s3url = "s3://update-logs-pantheon-managed-sites/prod";
-  $sleep_max_proc = 300;
-  $sleep_s3_sync = 180;
+  $sleep_max_proc = 120;
+  $sleep_s3_sync = 120;
   $s3_sync_attempts = 20;
 }
 
