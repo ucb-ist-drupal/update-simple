@@ -12,6 +12,6 @@ if [ "$UPENV" == 'live' ]; then
 fi
 
 echo "Checking homepage HTTP status look for 200 at end:"
-wget -O /dev/null --server-response http://$UPENV-$SITE.pantheon.berkeley.edu 2>&1 | awk '/^  HTTP/{print "$1 $2 $3"}'
+wget -O /dev/null --server-response http://$UPENV-$SITE.pantheon.berkeley.edu 2>&1 | awk '/^  HTTP/{print $2}'
 
 echo "DONE with $SITE"
