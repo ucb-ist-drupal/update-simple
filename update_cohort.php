@@ -41,9 +41,9 @@ if (strpos($cohort_file, '-test')) {
 }
 
 foreach ($sites as $site) {
-  $num_procs = count_procs($update_script);
+  $proc_data = monitor_processes($update_script);
   $i = 0;
-  while ($num_procs == $max_procs && $i < $max_proc_attempts) {
+  while ($proc_data['number'] == $max_procs && $i < $max_proc_attempts) {
 
     print "Notice: Max processes ($max_procs) reached.  Sleeping.\n";
     sleep($sleep_max_proc);
@@ -52,12 +52,13 @@ foreach ($sites as $site) {
 
     $i++;
     if ($i == $max_proc_attempts) {
-      print "Error: $num_procs long-running processes have not finished after waiting " . round(($i * $max_proc_attempts) / 60, 2) . " minutes. Aborting.\n";
+      print "Error: " . $proc_data['number'] . " long-running processes have not finished after waiting " . round(($i * $max_proc_attempts) / 60, 2) . " minutes.\n";
+      print "Error: Process IDs:\n" . $proc_data['list'] . "\nAborting.\n";
       exit(2);
     }
 
     // Recheck processes.
-    $num_procs = count_procs($update_script);
+    $proc_data = monitor_processes($update_script);
   }
 
   $cmd = "./$update_script $site $env $release";
@@ -73,13 +74,12 @@ foreach ($sites as $site) {
 
 }
 
-
 // Wait for all processes to finish and do a final log sync to s3
 $max_attempts = $s3_sync_attempts;
 print "Notice: Final log sync to S3.\n";
 for ($j = 1; $j <= $max_attempts; $j++) {
-  $num_procs = count_procs($update_script);
-  if ($num_procs == 0) {
+  $proc_data = monitor_processes($update_script);
+  if ($proc_data['number'] == 0) {
     s3_sync($s3url, $log_dir);
     print "Notice: Finished with $cohort_file.\n";
     break;
@@ -96,9 +96,20 @@ for ($j = 1; $j <= $max_attempts; $j++) {
   }
 }
 
-function count_procs($update_script) {
-  // grep for "php $update_script" so to filter out processes like "emacs $update_script"
-  return trim(exec("pgrep -f $update_script | wc -l"));
+function monitor_processes($update_script) {
+
+  $values = [];
+
+  $cmd = "pgrep -f $update_script";
+  // If pgrep finds no processes it exits with 1, so don't check exit status.
+  exec($cmd, $out);
+
+  $values = [
+    'number' => count($out),
+    'list' => implode("\n", $out)
+  ];
+
+  return $values;
 }
 
 function s3_sync($s3url, $log_dir) {
