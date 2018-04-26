@@ -5,9 +5,17 @@ $max_procs = $argv[3];
 
 $TEST = TRUE;
 
+if (empty(getenv('S3_UPDATES_BUCKET'))) {
+  print "Error: You must export the environment variable 'S3_UPDATES_BUCKET' before using this script.\n";
+  exit(1);
+}
+else {
+  $updates_bucket = getenv('S3_UPDATES_BUCKET');
+}
+
 if ($TEST) {
   $update_script = 'update_test.sh';
-  $s3url = "s3://update-logs-pantheon-managed-sites/dev";
+  $s3url = "$updates_bucket/dev";
   $sleep_max_proc = 10;
   $max_proc_attempts = 10;
   $sleep_s3_sync = 10;
@@ -15,7 +23,7 @@ if ($TEST) {
 }
 else {
   $update_script = 'update.sh';
-  $s3url = "s3://update-logs-pantheon-managed-sites/prod";
+  $s3url = "$updates_bucket/prod";
   $sleep_max_proc = 120;
   $max_proc_attempts = 30;
   $sleep_s3_sync = 120;
