@@ -1,3 +1,8 @@
+#  DEPRECATED!
+This was a one-time workaround for an urgent situation.  The features that this script offers have been incorporated into `istdrupal-updates-apply` and `wps sites:updates` with the options `--minimal`, `--quick`, `--no-rr`.
+
+This code is not maintained.
+
 # Update Simple
 
 This started as a bare-bones bash script `update.sh` which allows applying 
